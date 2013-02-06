@@ -17,6 +17,8 @@ class WP_Post_Flowdock_Dash{
 	 */
 	function __construct() {
 		
+		$this->foo();
+		
 		//set params
 		$this->flows = get_option($this->option_name, array());
 		$this->logger = Logger::getLogger(__CLASS__);
@@ -162,10 +164,66 @@ class WP_Post_Flowdock_Dash{
 					"https://api.flowdock.com/v1/messages/team_inbox/{$apikey}",
 					"post",
 					$params);
+					
+				//wait 3 seconds then request inbox and search for message id
+				sleep(3);
+				$url = "https://{$user_apikey}@api.flowdock.com/flows/web-eire/main/messages";
+				$res = $module->request($url, "get", array(
+					'event' => 'mail'
+				));
+				$body = array_reverse(json_decode($res['body']));
+				
+				foreach($body as $email){
+					$title = $email->content->subject;
+					$this->logger->info("Matching... {$title} => {$post->post_title}");
+					if($title==$post->post_title){
+						$this->logger->info("Match found");
+						$this->logger->info($email);
+						$id = $email->id;
+						break;
+					}
+				}
 			}
-			
-			$this->logger->info($res);
 		}
 			
+	}
+	
+	public function foo(){
+		
+		global $API_Connection_Manager;
+		$module = $API_Connection_Manager->get_service("flowdock/index.php");
+		$email_id = "3331";
+				$url = "https://{$user_apikey}@api.flowdock.com/flows/web-eire/main/messages/{$email_id}";
+				$res = $module->request($url, "get", array(
+					'event' => 'mail'
+				));
+				$body = json_decode($res['body']);
+				print_r($body);
+				return;
+		$url = "https://{$user_apikey}@api.flowdock.com/flows/web-eire/main/messages";
+		$email_id = "3331";
+		
+		$res = $module->request($url, "post", array(
+			'event' => 'message',
+			'tags' => "[\"influx:{$email_id}\"]",
+			'content' => "this is the content"
+		));
+		
+		/**
+{
+  "app": "chat",
+  "sent": 1317722877378,
+  "uuid": "O-8aGb0fcc5gEgTX",
+  "tags": ["influx:3838422"],
+  "flow": "subdomain:flow",
+  "id": 3838423,
+  "event": "comment",
+  "content": {
+    "title": Title of parent",
+    "text": "This is a comment"
+  },
+  "user": "1609",
+  "attachments": []
+}		 */
 	}
 }
