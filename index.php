@@ -42,36 +42,4 @@ require_once( WP_PLUGIN_DIR . "/api-connection-manager/index.php");
 //end 3rd parties
 
 //construct objects
-$wp_post_flowdock = new WP_Post_Flowdock();
 $wp_post_flowdock_dash = new WP_Post_Flowdock_Dash();
-
-/**
- * Hook checkbox to dashboard post-edit form
- */
-
-/**
- * Callback for submitting comments to the flow
- * 
- * @global API_Connection_Manager $API_Connection_Manager
- */
-function wp_comment_flowdock(){
-	global $API_Connection_Manager;
-	$module = $API_Connection_Manager->get_service('flowdock/index.php');
-	$res = $module->request();
-	return $res;
-}
-
-/**
-$token = "ed7cbd45fe4c646dcfbfcff447b695a6";
-$url = "https://api.flowdock.com/v1/messages/chat/{$token}";
-
-$params = array(
-	'content' => 'WP Comment Flowdock',
-	'external_user_name' => 'Temp-Name'
-);
-$res = wp_remote_post($url, array('body' => $params));
-print "<pre>";
-print_r($res);
-print "</pre>";
- * 
- */

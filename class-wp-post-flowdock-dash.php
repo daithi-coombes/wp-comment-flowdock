@@ -17,11 +17,9 @@ class WP_Post_Flowdock_Dash{
 	 */
 	function __construct() {
 		
-		$this->foo();
-		
 		//set params
 		$this->flows = get_option($this->option_name, array());
-		$this->logger = Logger::getLogger(__CLASS__);
+		//$this->logger = Logger::getLogger(__CLASS__);
 		
 		//actions
 		add_action('admin_menu', array(&$this, 'dash_menu'));
@@ -186,44 +184,5 @@ class WP_Post_Flowdock_Dash{
 			}
 		}
 			
-	}
-	
-	public function foo(){
-		
-		global $API_Connection_Manager;
-		$module = $API_Connection_Manager->get_service("flowdock/index.php");
-		$email_id = "3331";
-				$url = "https://{$user_apikey}@api.flowdock.com/flows/web-eire/main/messages/{$email_id}";
-				$res = $module->request($url, "get", array(
-					'event' => 'mail'
-				));
-				$body = json_decode($res['body']);
-				print_r($body);
-				return;
-		$url = "https://{$user_apikey}@api.flowdock.com/flows/web-eire/main/messages";
-		$email_id = "3331";
-		
-		$res = $module->request($url, "post", array(
-			'event' => 'message',
-			'tags' => "[\"influx:{$email_id}\"]",
-			'content' => "this is the content"
-		));
-		
-		/**
-{
-  "app": "chat",
-  "sent": 1317722877378,
-  "uuid": "O-8aGb0fcc5gEgTX",
-  "tags": ["influx:3838422"],
-  "flow": "subdomain:flow",
-  "id": 3838423,
-  "event": "comment",
-  "content": {
-    "title": Title of parent",
-    "text": "This is a comment"
-  },
-  "user": "1609",
-  "attachments": []
-}		 */
 	}
 }
